@@ -9,10 +9,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.test.annotation.Commit;
 
 import javax.print.attribute.standard.PageRanges;
 
+import java.awt.*;
 import java.beans.Transient;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -103,5 +107,61 @@ public class MemorepositoryTests {
         result.get().forEach(memo -> {
             System.out.println(memo);
         });
+    }
+
+    @Test
+    public void testQueryMethod(){
+        List<Memo> list= memoRepository.findByMnoBetweenOrderByMnoDesc(50L, 80L);
+        for (Memo memo: list){
+            System.out.println(memo);
+        }
+
+    }
+
+    @Test
+    public void testQueryMethodWithPageable(){
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("mno").descending());
+        Page<Memo> result = memoRepository.findByMnoBetween(20L, 50L, pageable);
+        result.get().forEach(
+                memo -> System.out.println(memo)
+        );
+
+        //for (Memo memo: result){
+        //   System.out.println(memo);
+        //}
+
+    }
+
+    @Test
+    @Commit // 없으면 반영안됨
+    @Transactional // 없으면 에러 발생
+    public void testDeleteQueryMetho(){
+        memoRepository.deleteMemoByMnoLessThan(10L);
+    }
+
+    @Query
+    public void testGetListDesc(){
+        List<Memo> list= memoRepository.getListDesc();
+
+    }
+    @Test
+    public void testUpdateMemoText(){
+        int updateCount = memoRepository.updateMemoText(30L, "mno가 30인 내용 수정");
+    }
+    @Test
+    public void testUpdateMemoText2(){
+        Memo memo = new Memo();
+        memo.setMno(31);
+        memo.setMemoText("Memo 객체 참조값을 파라메타로 사용");
+        int updateCount = memoRepository.updateMemoText2(memo);
+    }
+    @Test
+    public void testgetListWithQuery(){
+        Pageable pageable = PageRequest.of(0,10, Sort.by("mno").ascending());
+        Page<Memo> result = memoRepository.getListWithQuery(32L,pageable);
+
+        result.get().forEach(
+                memo -> System.out.println(memo)
+        );
     }
 }

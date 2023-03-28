@@ -20,4 +20,11 @@ public class Memo {
     private String memoText;
 
 
+    public void setMno(int mno) {
+        this.mno = mno;
+    }
+
+    public void setMemoText(String memoText) {
+        this.memoText = memoText;
+    }
 }
